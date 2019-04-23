@@ -329,7 +329,7 @@ class unet_model:
 
 
 def keras_unet(generator_inputs,generator_outputs_channels=2, ngf=32, use_drop=True, training=True):
-
+    
     layers = []
 
     _ = keras.layers.Conv2D(ngf, 3, 2, padding='same')(generator_inputs)
@@ -345,8 +345,6 @@ def keras_unet(generator_inputs,generator_outputs_channels=2, ngf=32, use_drop=T
         ngf * 8, # encoder_8: [batch, 2, 2, ngf * 8] => [batch, 1, 1, ngf * 8]
     ]
     for out_channels in layer_specs:
-        scope_name = "down%d" % (len(layers) + 1)
-
         _ = keras.layers.LeakyReLU(.2)(_)
         _ = keras.layers.Conv2D(out_channels, strides=2, kernel_size=3, padding='same')(_)
         _ = keras.layers.BatchNormalization()(_)
@@ -379,9 +377,9 @@ def keras_unet(generator_inputs,generator_outputs_channels=2, ngf=32, use_drop=T
         if dropout > 0.0 and use_drop:
             _ = keras.layers.Dropout(dropout)(_)
         layers.append(_)
-    scope_name = "outputs"
-    with tf.variable_scope(scope_name):
-        input = keras.layers.Concatenate(axis=-1)([layers[-1], layers[0]])#tf.concat([layers[-1], layers[0]], axis=3)
-        rectified = keras.layers.Activation('relu')(input)
-        logits = keras.layers.Conv2DTranspose(generator_outputs_channels, strides=2, kernel_size=3, padding='same')(rectified)
-    return logits
+        
+    input = keras.layers.Concatenate(axis=-1)([layers[-1], layers[0]])#tf.concat([layers[-1], layers[0]], axis=3)
+    rectified = keras.layers.Activation('relu')(input)
+    outputs = keras.layers.Conv2DTranspose(generator_outputs_channels, strides=2, kernel_size=3, padding='same', activation='sigmoid')(rectified)
+    
+    return keras.models.Model(generator_inputs, outputs)

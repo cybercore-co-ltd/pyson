@@ -6,3 +6,4 @@ pyson/__pycache__
 test_unet.py
 **/.idea
 pyson/.ipynb_checkpoints/unet-checkpoint.py
+**/*egg-info/

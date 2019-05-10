@@ -6,6 +6,6 @@ setup(name='pyson',
       url='https://github.com/vnbot2/pyson.git',
       author='Anh Vo Tran Hai',
       author_email='anson@cinnamon.is',
-      license='CINNAMON',
+      license='MIT',
       packages=['pyson'],
       zip_safe=False)

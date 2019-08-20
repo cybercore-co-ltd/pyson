@@ -223,7 +223,7 @@ def find_contours(thresh):
                 Hierarchy:
 
     """
-    im2, contours, hierarchy = cv2.findContours(
+    contours, hierarchy = cv2.findContours(
         thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     return contours, hierarchy[0]
 

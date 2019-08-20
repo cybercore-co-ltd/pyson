@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
 import xxhash
 import pickle
-
+import torch
 
 def lib_reload(some_module):
     import importlib
@@ -175,7 +175,22 @@ def show_df(df, path_column=None, max_col_width=-1):
 
 
 
+class AverageMeter:
+    def __init__(self, name):
+        self.name = name
+        self.values = []
 
+    def update(self, new_value, verbose=True):
+        if isinstance(new_value, torch.Tensor):
+            new_value = new_value.item()
+        self.values.append(new_value)
+
+    def __str__(self):
+        s = '{}: mean:{:0.3f}, last:{:0.3f}'.format(self.name, np.mean(self.values), self.values[-1])
+        return s
+
+    def mean(self):
+        return np.mean(self.values)
 
 
 if __name__ == '__main__':

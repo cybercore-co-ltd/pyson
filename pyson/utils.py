@@ -7,7 +7,13 @@ from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
 import xxhash
 import pickle
-import torch
+import inspect
+try:
+    import torch
+except:
+    pass
+
+print_source = lambda x: print(inspect.getsource(x))
 
 def lib_reload(some_module):
     import importlib

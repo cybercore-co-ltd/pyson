@@ -54,19 +54,26 @@ def multi_apply(func, *args, **kwargs):
 
 
 
-def multi_thread(fn, array_inputs, max_workers=None, desc="Executing Pipeline", unit=" Samples"):
+def multi_thread(fn, array_inputs, max_workers=None, desc="Executing Pipeline", unit=" Samples", verbose=False):
     def _wraper(x):
         i, input = x
         return {i: fn(input)}
     
     array_inputs = [(i, _) for i, _ in enumerate(array_inputs)]
-    with tqdm(total=len(array_inputs), desc=desc, unit=unit) as progress_bar:
+    if verbose:
+        with tqdm(total=len(array_inputs), desc=desc, unit=unit) as progress_bar:
+            outputs = {}
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                for result in executor.map(_wraper, array_inputs):
+                    outputs.update(result)
+                    progress_bar.update(1)
+    else:
         outputs = {}
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             for result in executor.map(_wraper, array_inputs):
                 outputs.update(result)
-                progress_bar.update(1)
-    print('Finished')
+    if verbose:
+        print('Finished')
     outputs = list(outputs.values())
     return outputs
     

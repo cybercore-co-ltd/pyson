@@ -136,7 +136,7 @@ def memoize(func):
         try:
             if 'hash_key' in kwargs.keys():
                 import inspect                
-                func_id = identify((inspect.getsource(func), kwargs['hash_key']))
+                func_id = identify(kwargs['hash_key'])
             else:
                 import inspect
                 func_id = identify((inspect.getsource(func), args, kwargs))

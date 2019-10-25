@@ -1,3 +1,5 @@
+*.egg-info/
+downloads
 pyson/__pycached__/
 **/*.DS_*
 .vscode

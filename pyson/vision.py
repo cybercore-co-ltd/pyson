@@ -155,7 +155,7 @@ def batch_ratio(preds, targets):
 
 def plot_images(images, cls_true=None, cls_pred=None,
                 space=(0.3, 0.3), mxn=None, 
-                size=(5,5), dpi=300, max_w = 1500):
+                size=(5,5), dpi=300, max_w = 1500, output_path=None):
     
     if mxn is None:
         n = max(max_w // max([img.shape[1] for img in images]), 1)
@@ -184,7 +184,11 @@ def plot_images(images, cls_true=None, cls_pred=None,
                 ax.set_xlabel(xlabel)
             ax.set_xticks([])
             ax.set_yticks([])
-    plt.show()
+    if output_path is None:
+        plt.show()
+    else:
+        plt.savefig(output_path)
+        plt.close()
 
     
 def run_data_init(initers, shuffle):

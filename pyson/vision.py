@@ -84,7 +84,7 @@ def read_img(path, to_gray=False, scale=(0, 255)):
             output image
     """
     img = cv2.imread(path)
-
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     if to_gray:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -99,6 +99,10 @@ def read_img(path, to_gray=False, scale=(0, 255)):
 
     return img
 
+def imwrite(path, img, is_rgb=True):
+    if is_rgb:
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    return cv2.imwrite(path, img)
 
 def resize_by_factor(image, factor):
     """ Resize image by a factor

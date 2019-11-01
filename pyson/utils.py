@@ -23,6 +23,10 @@ def lib_reload(some_module):
     import importlib
     return importlib.reload(some_module)
 
+def do_by_chance(chance):
+    assert chance > 1 and chance < 100
+    return np.random.uniform() < chance/100
+
 def get_paths(directory, input_type='png'):
     """
         Get a list of input_type paths

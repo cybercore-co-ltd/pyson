@@ -74,7 +74,7 @@ def convert_mask_to_cell(line_mask):
     return out_cnts
 
 
-def read_img(path, to_gray=False, scale=(0, 255)):
+def imread(path, to_gray=False, scale=(0, 255)):
     """ Read image given a path
         Arguments:
             path: path to image

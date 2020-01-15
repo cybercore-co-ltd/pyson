@@ -257,3 +257,33 @@ def put_text(image, pos, text):
                        1.0, (255, 255, 255), 2)
 
 
+
+def visualize_torch_tensor(input_tensor, normalize=True, output_path=None, input_type='onehot'):
+    import torch
+    
+    if isinstance(input_tensor, torch.Tensor):
+        input_tensor = input_tensor.detach().cpu().numpy()
+        if len(np.unique(input_tensor)) == 2:
+            normalize = False
+    # if none save in cache
+    if output_path is None:
+        os.makedirs('cache', exist_ok=True)
+        output_path = 'cache/temp.jpg'
+    if normalize:
+        input_tensor = (input_tensor-input_tensor.min())/(input_tensor.max()-input_tensor.min())
+        input_tensor *= 255
+
+    if input_type == 'onehot':
+        c,h,w = input_tensor.shape
+        color = np.random.choice(256, (c, 3))
+        color_tensor = input_tensor[:,None,:,:]*color[:,:,None,None]
+        out_tensor = np.zeros([h, w, 3], color_tensor.dtype)
+        for i in range(c):
+            out_tensor += np.transpose(color_tensor[i], [1,2,0])
+        out_tensor = out_tensor *255 /out_tensor.max()
+    elif input_type=='image':
+        out_tensor = np.transpose(input_tensor, [1,2,0])
+    else:
+        raise NotImplemented
+    cv2.imwrite(output_path, out_tensor)
+    print('out-> :', output_path)

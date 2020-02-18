@@ -49,12 +49,6 @@ def read_json(path):
     with open(path, 'r') as f:
         data = json.load(f)
     return data
-def multi_apply(func, *args, **kwargs):
-    pfunc = partial(func, **kwargs) if kwargs else func
-    map_results = map(pfunc, *args)
-    rt =  tuple(map(list, zip(*map_results)))
-    rt = list(zip(*rt))
-    return rt
 
 
 

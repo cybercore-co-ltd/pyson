@@ -5,14 +5,15 @@ import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
-import xxhash
 import pickle
 from functools import partial
 #import mmcv
 import numpy as np
 from six.moves import map, zip
 import inspect
+import shutil
 try:
+    import xxhash
     import torch
 except:
     pass
@@ -154,6 +155,37 @@ def memoize(func):
     return memoized_func
 
 
+def make_mini_dataset(json_path, image_prefix, out_dir, n=1000):
+    os.makedirs(os.path.join(out_dir, "images"), exist_ok=True)
+    os.makedirs(os.path.join(out_dir, "annotations"), exist_ok=True)
+    j = read_json(json_path)
+    os.makedirs(out_dir)
+    x = j["annotations"]
+    img_ids = list(set([_["image_id"] for _ in x]))
+    img_id2path = dict([_["id"]:_ for _ in j["images"]])
+    images = []
+    annotations = []
+
+    for image in x["images"]:
+        if image["id"] in img_ids[:n]:
+            images.append(image)
+            file_name = image["filename"]
+            old_path = os.path.join(image_prefix, file_name)
+            new_path = os.path.join(out_dir, "images", file_name)
+            shutil.copy(old_path, new_path)
+
+    for annotation in x["annotations"]:
+        if annotation["image_id"] in img_ids[:n]:
+            annotations.append(annotation)
+    x["images"] = images
+    x["annotations"] = annotations
+    out_json = os.path.join(out_dir, "annotations", "mini_json.json")
+    with open(out_json, "w") as f:
+        json.dump(x, f)
+    print(out_json)
+
+
+
 def show_df(df, path_column=None, max_col_width=-1):
     """
         Turn a DataFrame which has the image_path column into a html table
@@ -192,6 +224,7 @@ def show_df(df, path_column=None, max_col_width=-1):
         return f'<img src="data:image/jpeg;base64,{image_base64(im)}">'
     
     return HTML(df.to_html(formatters={path_column: image_formatter}, escape=False))
+
 
 
 

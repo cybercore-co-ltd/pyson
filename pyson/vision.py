@@ -1,4 +1,4 @@
-import cv2
+emport cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -143,7 +143,7 @@ def resize_to_receptive_field(image, receptive_field=256):
     Returns:
         resieed image
     """
-    new_h, new_w = np.ceil(np.array(image.shape[:2]) / receptive_field).astype(np.int32) * rcf
+    new_h, new_w = np.ceil(np.array(image.shape[:2]) / receptive_field).astype(np.int32) * receptive_field
     image = cv2.resize(image, (new_w, new_h))
     return image
 

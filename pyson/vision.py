@@ -159,13 +159,12 @@ def batch_ratio(preds, targets):
 
 def plot_images(images, cls_true=None, cls_pred=None,
                 space=(0.3, 0.3), mxn=None, 
-                size=(5,5), dpi=300, max_w = 1500, output_path=None):
+                size=(5,5), dpi=300, max_w = 1500, output_path=None, cmap='binary'):
     
     if mxn is None:
         n = max(max_w // max([img.shape[1] for img in images]), 1)
         n = min(n, len(images))
         m = len(images)//n 
-        #m = m
         m = max(1, m)
         mxn = (m,n)
         print(mxn)
@@ -176,7 +175,7 @@ def plot_images(images, cls_true=None, cls_pred=None,
     fig.dpi=dpi
     for i, ax in enumerate(axes.flat):
         if i < len(images):
-            ax.imshow(images[i], cmap='binary')
+            ax.imshow(images[i], cmap=cmap)
             if cls_pred is None and cls_true is not None:
                 xlabel = "True: {0}".format(cls_true[i])
             elif cls_pred is None and cls_true is not None:

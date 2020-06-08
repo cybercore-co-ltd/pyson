@@ -286,3 +286,24 @@ def visualize_torch_tensor(input_tensor, normalize=True, output_path=None, input
         raise NotImplemented
     cv2.imwrite(output_path, out_tensor)
     print('out-> :', output_path)
+
+
+
+
+def images_to_video(images, out_path):
+ 
+    img_array = []
+    for img in images:
+        height, width, layers = img.shape
+        size = (width,height)
+        img_array.append(img)
+     
+     
+    out = cv2.VideoWriter(out_path, cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
+     
+    for i in range(len(img_array)):
+        out.write(img_array[i])
+    out.release()
+    print(out_path)
+
+

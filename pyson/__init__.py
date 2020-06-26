@@ -1,2 +1,2 @@
-from .utils import memoize, multi_thread
+from .utils import memoize, multi_thread, timeit
 from . import vision

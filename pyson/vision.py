@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from . import utils
 
 
 def get_min_rect(c, resize_ratio):
@@ -256,53 +257,70 @@ def put_text(image, pos, text):
                        1.0, (255, 255, 255), 2)
 
 
+def torch_tensor_to_image(tensor, cdim=1):
+    permute = [0,2,3,1] if len(tensor.shape) == 4 else [1,2,0]
+    np_array = tensor.detach().permute(permute).cpu().numpy()
+    np_array = (np_array-np_array.min())/(np_array.max()-np_array.min())
+    np_array = (np_array)*255
+    return np_array.astype('uint8')
 
-def visualize_torch_tensor(input_tensor, normalize=True, output_path=None, input_type='onehot'):
-    import torch
+
+# def visualize_torch_tensor(input_tensor, normalize=True, output_path=None, input_type='onehot'):
+#     import torch
     
-    if isinstance(input_tensor, torch.Tensor):
-        input_tensor = input_tensor.detach().cpu().numpy()
-        if len(np.unique(input_tensor)) == 2:
-            normalize = False
-    # if none save in cache
-    if output_path is None:
-        os.makedirs('cache', exist_ok=True)
-        output_path = 'cache/temp.jpg'
-    if normalize:
-        input_tensor = (input_tensor-input_tensor.min())/(input_tensor.max()-input_tensor.min())
-        input_tensor *= 255
+#     if isinstance(input_tensor, torch.Tensor):
+#         input_tensor = input_tensor.detach().cpu().numpy()
+#         if len(np.unique(input_tensor)) == 2:
+#             normalize = False
+#     # if none save in cache
+#     if output_path is None:
+#         os.makedirs('cache', exist_ok=True)
+#         output_path = 'cache/temp.jpg'
+#     if normalize:
+#         input_tensor = (input_tensor-input_tensor.min())/(input_tensor.max()-input_tensor.min())
+#         input_tensor *= 255
 
-    if input_type == 'onehot':
-        c,h,w = input_tensor.shape
-        color = np.random.choice(256, (c, 3))
-        color_tensor = input_tensor[:,None,:,:]*color[:,:,None,None]
-        out_tensor = np.zeros([h, w, 3], color_tensor.dtype)
-        for i in range(c):
-            out_tensor += np.transpose(color_tensor[i], [1,2,0])
-        out_tensor = out_tensor *255 /out_tensor.max()
-    elif input_type=='image':
-        out_tensor = np.transpose(input_tensor, [1,2,0])
-    else:
-        raise NotImplemented
-    cv2.imwrite(output_path, out_tensor)
-    print('out-> :', output_path)
-
-
+#     if input_type == 'onehot':
+#         c,h,w = input_tensor.shape
+#         color = np.random.choice(256, (c, 3))
+#         color_tensor = input_tensor[:,None,:,:]*color[:,:,None,None]
+#         out_tensor = np.zeros([h, w, 3], color_tensor.dtype)
+#         for i in range(c):
+#             out_tensor += np.transpose(color_tensor[i], [1,2,0])
+#         out_tensor = out_tensor *255 /out_tensor.max()
+#     elif input_type=='image':
+#         out_tensor = np.transpose(input_tensor, [1,2,0])
+#     else:
+#         raise NotImplemented
+#     cv2.imwrite(output_path, out_tensor)
+#     print('out-> :', output_path)
 
 
-def images_to_video(images, out_path):
- 
+
+
+def images_to_video(images, out_path, fps=30):
+    
+    from tqdm import tqdm
     img_array = []
-    for img in images:
-        height, width, layers = img.shape
-        size = (width,height)
-        img_array.append(img)
-     
-     
-    out = cv2.VideoWriter(out_path, cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
+    # for img in tqdm(images):
+    def f(img):
+        name =  os.path.basename(img)
+        if isinstance(img, str):
+            img = cv2.imread(img)
+
+        img = put_text(img, (20, 20),name)
+        
+        return img
+    
+    img_array = utils.multi_thread(f, images, verbose=True)
+    h, w = img_array[0].shape[:2]
+    size = (w, h)
+    
+    out = cv2.VideoWriter(out_path, cv2.VideoWriter_fourcc(*'DIVX'), fps, size)
      
     for i in range(len(img_array)):
-        out.write(img_array[i])
+        im = cv2.resize(img_array[i], size)
+        out.write(im)
     out.release()
     print(out_path)
 

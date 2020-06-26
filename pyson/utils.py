@@ -76,15 +76,7 @@ def multi_thread(fn, array_inputs, max_workers=None, desc="Executing Pipeline", 
     outputs = list(outputs.values())
     return outputs
     
-    
-def get_angle(p1, p2):
-    x1, y1 = p1
-    x2, y2 = p2
-    dx = abs(x1 - x2)
-    dy = abs(y1 - y2)
-    return np.argtan(dy/dx)*180
-
-
+ 
 def timeit(method):
     def timed(*args, **kw):
         ts = time.time()

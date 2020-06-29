@@ -158,7 +158,7 @@ def batch_ratio(preds, targets):
     return np.mean(rt)
 
 
-def plot_images(images, cls_true=None, cls_pred=None,
+def plot_images(images, labels=None, cls_true=None, cls_pred=None,
                 space=(0.3, 0.3), mxn=None, 
                 size=(5,5), dpi=300, max_w = 1500, output_path=None, cmap='binary'):
     
@@ -177,7 +177,9 @@ def plot_images(images, cls_true=None, cls_pred=None,
     for i, ax in enumerate(axes.flat):
         if i < len(images):
             ax.imshow(images[i], cmap=cmap)
-            if cls_pred is None and cls_true is not None:
+            if labels is not None:
+                xlabel = labels[i]
+            elif cls_pred is None and cls_true is not None:
                 xlabel = "True: {0}".format(cls_true[i])
             elif cls_pred is None and cls_true is not None:
                 xlabel = "True: {0}, Pred: {1}".format(

@@ -306,12 +306,10 @@ def images_to_video(images, out_path, fps=30):
     img_array = []
     # for img in tqdm(images):
     def f(img):
-        name =  os.path.basename(img)
         if isinstance(img, str):
+            name =  os.path.basename(img)
             img = cv2.imread(img)
-
-        img = put_text(img, (20, 20),name)
-        
+            img = put_text(img, (20, 20),name)
         return img
     
     img_array = utils.multi_thread(f, images, verbose=True)

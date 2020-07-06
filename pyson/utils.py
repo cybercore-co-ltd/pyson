@@ -221,6 +221,20 @@ def show_df(df, path_column=None, max_col_width=-1):
 
 
 
+def load_ssh(link, ssh_username, ssh_password, server_address, web_port=8000):
+    assert link.startswith('/checkpoints')
+    from torch.utils import model_zoo
+    from sshtunnel import SSHTunnelForwarder
+    with SSHTunnelForwarder(
+        (server_address[0], server_address[1]),
+        ssh_username=ssh_username,
+        ssh_password=ssh_password,
+        remote_bind_address=('localhost', web_port)
+    ) as server:
+        link = f'http://localhost:{server.local_bind_port}'+link.replace('/checkpoints', '')
+        print("Downloading with ssh: ", link)
+        ckpt = model_zoo.load_url(link)
+    return ckpt
 
 if __name__ == '__main__':
     path = 'sample_image/1.png'

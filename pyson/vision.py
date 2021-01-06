@@ -312,7 +312,7 @@ def images_to_video(images, out_path, fps=30):
             img = put_text(img, (20, 20),name)
         return img
     
-    img_array = utils.multi_thread(f, images, verbose=True)
+    img_array = [f(img) for img in images]
     h, w = img_array[0].shape[:2]
     size = (w, h)
     
